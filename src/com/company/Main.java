@@ -36,8 +36,8 @@ public class Main extends Application{
 
         currentStage = primarystage;
 
-        btnCalc = new Button("Calculator");
-        btnConv = new Button("Converter");
+        btnCalc = new Button("Converter");
+        btnConv = new Button("Calculator");
         btnCalc.setOnAction(e-> ButtonClicked(e));
         btnConv.setOnAction(e-> ButtonClicked(e));
 
