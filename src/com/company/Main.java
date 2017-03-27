@@ -1,6 +1,8 @@
 package com.company;
 
 import javafx.application.Application;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -22,13 +24,11 @@ import java.util.List;
 public class Main extends Application{
 
     private List<String> buttons = Arrays.asList("7","8","9","DEL","CLEAR","NEG","4","5","6","^","Sqrt","SIN","1","2","3","+","-","COS",".","0","=","X","/","TAN");
-    //private List<String> covnLabels = Arrays.asList("Decimal", "Binary", "Octal", "Hexadecimal");
     TextField textField = new TextField();
     TextField tfDecimal = new TextField();
     TextField tfBinary = new TextField();
     TextField tfHex = new TextField();
     TextField tfOct = new TextField();
-
     private Button btnCalc, btnConv;
     private Label lblCalc, lblConv;
     private BorderPane calcPane, convPane;
@@ -105,6 +105,43 @@ public class Main extends Application{
         primarystage.setScene(calcScene);
         primarystage.show();
 
+        //Conversions
+        tfDecimal.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.matches("\\d*")) {
+                    tfDecimal.setText(newValue.replaceAll("[^\\d]", ""));
+                }
+            }
+        });
+
+        tfBinary.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.matches("01")) {
+                    tfBinary.setText(newValue.replaceAll("[^01]", ""));
+                }
+            }
+        });
+
+        tfHex.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.matches("0123456789abcdef")) {
+                    tfHex.setText(newValue.replaceAll("[^0123456789abcdef]", ""));
+                }
+            }
+        });
+
+        tfOct.textProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                if (!newValue.matches("01234567")) {
+                    tfOct.setText(newValue.replaceAll("[^01234567]", ""));
+                }
+            }
+        });
+
 
         tfDecimal.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
@@ -158,6 +195,7 @@ public class Main extends Application{
             }
         });
     }
+
 
     public void ButtonClicked(ActionEvent e) {
         if (e.getSource() == btnCalc) {
