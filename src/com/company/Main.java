@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -24,11 +23,12 @@ import java.util.List;
 public class Main extends Application{
 
     private List<String> buttons = Arrays.asList("7","8","9","DEL","CLEAR","NEG","4","5","6","^","Sqrt","SIN","1","2","3","+","-","COS",".","0","=","X","/","TAN");
-    TextField textField = new TextField();
-    TextField tfDecimal = new TextField();
-    TextField tfBinary = new TextField();
-    TextField tfHex = new TextField();
-    TextField tfOct = new TextField();
+    String css = this.getClass().getResource("calculator.css").toExternalForm();
+    TextField calcDisplay = new TextField();
+    TextField decDisplay = new TextField();
+    TextField binDisplay = new TextField();
+    TextField hexDisplay = new TextField();
+    TextField octDisplay = new TextField();
     private Button btnCalc, btnConv;
     private Label lblCalc, lblConv;
     private BorderPane calcPane, convPane;
@@ -40,158 +40,172 @@ public class Main extends Application{
 
     @Override
     public void start(Stage primarystage) throws Exception {
-        //Setup
         primarystage.setResizable(false);
         currentStage = primarystage;
 
+        //Calculator Setup
         btnCalc = new Button("Converter");
-        btnConv = new Button("Calculator");
+        btnCalc.getStyleClass().add("scene-button"); //CSS
         btnCalc.setOnAction(e-> ButtonClicked(e));
-        btnConv.setOnAction(e-> ButtonClicked(e));
 
         lblCalc = new Label("This is the Calculator");
-        lblConv = new Label("This is the Converter");
-
         calcPane = new BorderPane();
-        calcPane.setMinWidth(600);
-        calcPane.setMaxWidth(600);
-        convPane = new BorderPane();
-
-        calcPane.setStyle("-fx-background-color: white; -fx-padding: 10px;");
-        convPane.setStyle("-fx-background-color: white; -fx-padding: 10px;");
-
+        calcPane.getStyleClass().add("pane");
         calcPane.setBottom(btnCalc);
-        convPane.setBottom(btnConv);
         calculator = new FlowPane();
-        converter = new FlowPane();
-
         calculator.setAlignment(Pos.CENTER);
-        calculator.setPadding(new Insets(30,20,30,20));
+        //calculator.setPadding(new Insets(30,20,20,20));
         calculator.setHgap(5);
         calculator.setVgap(5);
+        calcDisplay.getStyleClass().add("display");
+        calcDisplay.setEditable(false);
+        calcDisplay.setMinSize(textfieldWidth, 70);
+        calcPane.setTop(calcDisplay);
 
-        converter.setAlignment(Pos.CENTER);
-        converter.setPadding(new Insets(30,20,30,20));
-        converter.setHgap(5);
-        converter.setVgap(5);
+        //Calculator Buttons
 
-        //Conversion
-        tfDecimal.setMinSize(580,40);
-        converter.getChildren().addAll(new Label("Decimal"), tfDecimal);
-        tfBinary.setMinSize(580,40);
-        converter.getChildren().addAll(new Label("Binary"), tfBinary);
-        tfHex.setMinSize(580,40);
-        converter.getChildren().addAll(new Label("Hexadecimal"), tfHex);
-        tfOct.setMinSize(580,40);
-        converter.getChildren().addAll(new Label("Octal"), tfOct);
 
-        convPane.setCenter(converter);
-
-        //Calculator
         for (String button: buttons) {
             Button b = new Button(button);
-            b.setMinSize(80,80);
+            b.getStyleClass().add("label");
+            b.setMinSize(85,78);
+            b.getStyleClass().add("calc-button");
             calculator.getChildren().addAll(b);
             //b.setOnAction(e -> doSomething(b.getText()));
         }
 
-        textField.setEditable(false);
-        textField.setMinSize(textfieldWidth, 70);
-        calcPane.setTop(textField);
         calcPane.setCenter(calculator);
 
+
+        //Converter Setup
+        convPane = new BorderPane();
+        convPane.getStyleClass().add("pane");
+        converter = new FlowPane();
+        converter.setAlignment(Pos.CENTER);
+        //converter.setPadding(new Insets(30,20,20,20));
+        converter.setHgap(5);
+        converter.setVgap(5);
+        lblConv = new Label("This is the Converter");
+
+        btnConv = new Button("Calculator");
+        btnConv.getStyleClass().add("scene-button");
+        btnConv.setOnAction(e-> ButtonClicked(e));
+        convPane.setBottom(btnConv);
+
+//        Label decLabel = new Label("Decimal");
+//        //decLabel.getStyleClass().add("label");
+
+        decDisplay.setMinSize(580,40);
+        decDisplay.getStyleClass().add("display");
+        converter.getChildren().addAll(new Label("Decimal"), decDisplay);
+        binDisplay.setMinSize(580,40);
+        binDisplay.getStyleClass().add("display");
+        converter.getChildren().addAll(new Label("Binary"), binDisplay);
+        hexDisplay.setMinSize(580,40);
+        hexDisplay.getStyleClass().add("display");
+        converter.getChildren().addAll(new Label("Hexadecimal"), hexDisplay);
+        octDisplay.setMinSize(580,40);
+        octDisplay.getStyleClass().add("display");
+        converter.getChildren().addAll(new Label("Octal"), octDisplay);
+
+        convPane.setCenter(converter);
+
+        //Draw
         calcScene = new Scene(calcPane, 600, 500);
         convScene = new Scene(convPane, 600, 500);
+        calcScene.getStylesheets().add(css);
+        convScene.getStylesheets().add(css);
         primarystage.setScene(calcScene);
+        primarystage.setTitle("JavaFX Calculator");
         primarystage.show();
 
-        //Conversions
-        tfDecimal.textProperty().addListener(new ChangeListener<String>() {
+        //Conversion Listeners & Handlers
+        decDisplay.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 if (!newValue.matches("\\d*")) {
-                    tfDecimal.setText(newValue.replaceAll("[^\\d]", ""));
+                    decDisplay.setText(newValue.replaceAll("[^\\d]", ""));
                 }
             }
         });
 
-        tfBinary.textProperty().addListener(new ChangeListener<String>() {
+        binDisplay.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 if (!newValue.matches("01")) {
-                    tfBinary.setText(newValue.replaceAll("[^01]", ""));
+                    binDisplay.setText(newValue.replaceAll("[^01]", ""));
                 }
             }
         });
 
-        tfHex.textProperty().addListener(new ChangeListener<String>() {
+        hexDisplay.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 if (!newValue.matches("0123456789abcdef")) {
-                    tfHex.setText(newValue.replaceAll("[^0123456789abcdef]", ""));
+                    hexDisplay.setText(newValue.replaceAll("[^0123456789abcdef]", ""));
                 }
             }
         });
 
-        tfOct.textProperty().addListener(new ChangeListener<String>() {
+        octDisplay.textProperty().addListener(new ChangeListener<String>() {
             @Override
             public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
                 if (!newValue.matches("01234567")) {
-                    tfOct.setText(newValue.replaceAll("[^01234567]", ""));
+                    octDisplay.setText(newValue.replaceAll("[^01234567]", ""));
                 }
             }
         });
 
 
-        tfDecimal.setOnKeyPressed(e -> {
+        decDisplay.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
-                int decimal = Integer.parseInt(tfDecimal.getText());
+                int decimal = Integer.parseInt(decDisplay.getText());
                 String decToBin = Integer.toBinaryString(decimal);
                 String decToHex = Integer.toHexString(decimal);
                 String decToOct = Integer.toOctalString(decimal);
 
-                tfBinary.setText(decToBin);
-                tfHex.setText(decToHex);
-                tfOct.setText(decToOct);
+                binDisplay.setText(decToBin);
+                hexDisplay.setText(decToHex);
+                octDisplay.setText(decToOct);
             }
         });
 
-        tfBinary.setOnKeyPressed(e -> {
+        binDisplay.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
-                int binary = Integer.parseInt(tfBinary.getText(),2);
+                int binary = Integer.parseInt(binDisplay.getText(),2);
                 String binToDec = Integer.toString(binary);
                 String binToHex = Integer.toHexString(binary);
                 String binToOct = Integer.toOctalString(binary);
 
-                tfDecimal.setText(binToDec);
-                tfHex.setText(binToHex);
-                tfOct.setText(binToOct);
+                decDisplay.setText(binToDec);
+                hexDisplay.setText(binToHex);
+                octDisplay.setText(binToOct);
             }
         });
 
-        tfHex.setOnKeyPressed(e -> {
+        hexDisplay.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
-            int hex = Integer.parseInt(tfHex.getText(),16);
+            int hex = Integer.parseInt(hexDisplay.getText(),16);
             String hexToDec = Integer.toString(hex);
             String hextoBin = Integer.toBinaryString(hex);
             String hexToOct = Integer.toOctalString(hex);
 
-            tfDecimal.setText(hexToDec);
-            tfBinary.setText(hextoBin);
-            tfOct.setText(hexToOct);
+            decDisplay.setText(hexToDec);
+            binDisplay.setText(hextoBin);
+            octDisplay.setText(hexToOct);
             }
         });
 
-        tfOct.setOnKeyPressed(e -> {
+        octDisplay.setOnKeyPressed(e -> {
             if (e.getCode() == KeyCode.ENTER) {
-                int oct = Integer.parseInt(tfOct.getText(), 8);
+                int oct = Integer.parseInt(octDisplay.getText(), 8);
                 String octToDec = Integer.toString(oct);
                 String octToBin = Integer.toBinaryString(oct);
                 String octToHex = Integer.toHexString(oct);
 
-                tfDecimal.setText(octToDec);
-                tfBinary.setText(octToDec);
-                tfHex.setText(octToHex);
+                decDisplay.setText(octToDec);
+                binDisplay.setText(octToDec);
+                hexDisplay.setText(octToHex);
             }
         });
     }
