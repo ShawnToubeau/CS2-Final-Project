@@ -66,7 +66,7 @@ public class Main extends Application{
 
         calcPage();
         numberPage();
-        //lengthPage();
+        ///lengthPage();
 
         primarystage.setScene(sceneCalc);
         primarystage.setTitle("JavaFX Calculator");
